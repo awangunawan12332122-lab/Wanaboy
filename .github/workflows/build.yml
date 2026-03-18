@@ -49,7 +49,7 @@ jobs:
         rm -rf ~/.buildozer
         rm -rf .buildozer
 
-    # 🔥 INSTALL SDK MANUAL
+    # 🔥 INSTALL ANDROID SDK
     - name: Install Android SDK
       run: |
         mkdir -p $HOME/android-sdk
@@ -76,6 +76,12 @@ jobs:
         echo "ANDROID_SDK_ROOT=$HOME/android-sdk" >> $GITHUB_ENV
         echo "PATH=$HOME/android-sdk/cmdline-tools/latest/bin:$HOME/android-sdk/platform-tools:$PATH" >> $GITHUB_ENV
 
+    # 💣 FIX SDKMANAGER LAWAS (PENTING BANGET)
+    - name: Fix sdkmanager
+      run: |
+        mkdir -p $ANDROID_HOME/tools/bin
+        ln -s $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager $ANDROID_HOME/tools/bin/sdkmanager
+
     # 🔥 FIX PATH BUILDOZER
     - name: Fix Buildozer Path
       run: |
@@ -89,7 +95,7 @@ jobs:
         export PATH=$ANDROID_HOME/build-tools/31.0.0:$PATH
         which aidl || ls $ANDROID_HOME/build-tools/31.0.0
 
-    # 🔥 FORCE INSTALL P4A
+    # 🔥 INSTALL P4A
     - name: Install python-for-android
       run: |
         mkdir -p ~/.buildozer/android/platform
