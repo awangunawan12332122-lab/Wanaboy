@@ -20,7 +20,6 @@ android.minapi = 21
 android.ndk = 25b
 android.archs = arm64-v8a
 
-# 🔥 PENTING
 android.skip_update = True
 android.accept_sdk_license = True
 android.build_tools = 31.0.0
