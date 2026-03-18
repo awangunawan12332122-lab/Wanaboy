@@ -2,6 +2,7 @@
 title = WanaboyAI
 package.name = wanaboyai
 package.domain = org.wanaboy
+version = 1.0
 
 source.dir = .
 source.include_exts = py,kv
