@@ -12,6 +12,12 @@ jobs:
 
     - uses: actions/checkout@v4
 
+    - name: Git Fix
+      run: |
+        git config --global --add safe.directory '*'
+        git config --global http.postBuffer 524288000
+        git config --global http.version HTTP/1.1
+
     - name: Setup Python
       uses: actions/setup-python@v5
       with:
@@ -37,8 +43,14 @@ jobs:
         pip install --upgrade pip
         pip install buildozer cython
 
-    # 🔥 INSTALL SDK MANUAL (BUKAN ACTION)
-    - name: Install Android SDK (FIX TOTAL)
+    # 🔥 CLEAN TOTAL
+    - name: Clean Buildozer
+      run: |
+        rm -rf ~/.buildozer
+        rm -rf .buildozer
+
+    # 🔥 INSTALL SDK MANUAL
+    - name: Install Android SDK
       run: |
         mkdir -p $HOME/android-sdk
         cd $HOME/android-sdk
@@ -64,22 +76,30 @@ jobs:
         echo "ANDROID_SDK_ROOT=$HOME/android-sdk" >> $GITHUB_ENV
         echo "PATH=$HOME/android-sdk/cmdline-tools/latest/bin:$HOME/android-sdk/platform-tools:$PATH" >> $GITHUB_ENV
 
-    # 🔥 FIX PALING PENTING
-    - name: Fix Buildozer Path (ANTI ERROR)
+    # 🔥 FIX PATH BUILDOZER
+    - name: Fix Buildozer Path
       run: |
         mkdir -p ~/.buildozer/android/platform
         ln -s $ANDROID_HOME ~/.buildozer/android/platform/android-sdk
         ln -s $ANDROID_HOME/ndk/25.2.9519653 ~/.buildozer/android/platform/android-ndk-r25b
 
-    # 🔥 PASTIKAN AIDL ADA
+    # 🔥 FIX AIDL
     - name: Fix AIDL
       run: |
         export PATH=$ANDROID_HOME/build-tools/31.0.0:$PATH
         which aidl || ls $ANDROID_HOME/build-tools/31.0.0
 
+    # 🔥 FORCE INSTALL P4A
+    - name: Install python-for-android
+      run: |
+        mkdir -p ~/.buildozer/android/platform
+        cd ~/.buildozer/android/platform
+        git clone https://github.com/kivy/python-for-android.git || true
+
+    # 🔥 BUILD FINAL
     - name: Build APK
       run: |
-        buildozer android clean
+        export P4A_DIR=~/.buildozer/android/platform/python-for-android
         buildozer android debug
 
     - name: Upload APK
