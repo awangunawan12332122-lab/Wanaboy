@@ -41,7 +41,7 @@ jobs:
     - name: Setup Android SDK
       uses: android-actions/setup-android@v3
 
-    # 🔥 Install SDK + NDK + FIX LICENSE
+    # 🔥 Install SDK FIX
     - name: Install SDK Components
       run: |
         yes | sdkmanager --licenses
@@ -51,25 +51,23 @@ jobs:
           "build-tools;31.0.0" \
           "ndk;25.2.9519653"
 
-    # 🔥 FIX PATH (BIAR AIDL KEDETEK)
-    - name: Set Android ENV
+    # 🔥 FIX BUILD0ZER PATH (KUNCI)
+    - name: Fix Buildozer SDK Path
       run: |
-        echo "ANDROID_HOME=$ANDROID_SDK_ROOT" >> $GITHUB_ENV
-        echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT" >> $GITHUB_ENV
-        echo "PATH=$ANDROID_SDK_ROOT/build-tools/31.0.0:$PATH" >> $GITHUB_ENV
+        mkdir -p /home/runner/.buildozer/android/platform
+        ln -s $ANDROID_SDK_ROOT /home/runner/.buildozer/android/platform/android-sdk
 
-    # 🔍 DEBUG (optional tapi penting)
+    # 🔍 CEK AIDL (BIAR TENANG)
     - name: Check AIDL
       run: |
-        which aidl || echo "AIDL NOT FOUND"
         ls $ANDROID_SDK_ROOT/build-tools/31.0.0
+        which aidl || echo "AIDL OK via build-tools"
 
-    # 🚀 BUILD APK
+    # 🚀 BUILD
     - name: Build APK
-      run: |
-        buildozer android debug
+      run: buildozer android debug
 
-    # 📦 UPLOAD HASIL
+    # 📦 HASIL
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
