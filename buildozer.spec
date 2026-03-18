@@ -24,4 +24,7 @@ android.skip_update = True
 android.accept_sdk_license = True
 android.build_tools = 31.0.0
 
+android.sdk_path = /home/runner/android-sdk
+android.ndk_path = /home/runner/android-sdk/ndk/25.2.9519653
+
 log_level = 2
