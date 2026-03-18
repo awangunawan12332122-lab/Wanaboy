@@ -1,5 +1,5 @@
 [app]
-title = Wanaboy么 AI
+title = WanaboyAI
 package.name = wanaboyai
 package.domain = org.wanaboy
 
