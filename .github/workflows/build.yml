@@ -2,67 +2,68 @@ name: Build APK WanaboyAI
 
 on:
   push:
-    branches:
-      - main
+    branches: [ "main" ]
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
 
     steps:
 
     - name: Checkout
       uses: actions/checkout@v4
 
+    # Python
     - name: Setup Python
       uses: actions/setup-python@v5
       with:
-        python-version: 3.11
+        python-version: "3.11"
 
-    - name: Install System Dependencies
+    # 🔥 Java FIX (ini penting)
+    - name: Setup Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: "temurin"
+        java-version: "17"
+
+    # System deps
+    - name: Install Dependencies
       run: |
         sudo apt update
         sudo apt install -y \
-        git zip unzip openjdk-17-jdk \
-        autoconf libtool pkg-config \
-        zlib1g-dev libncurses5-dev \
-        libncursesw5-dev libtinfo6 cmake \
-        libffi-dev libssl-dev
+          git zip unzip \
+          autoconf libtool pkg-config \
+          zlib1g-dev libncurses5-dev \
+          libncursesw5-dev libtinfo6 cmake \
+          libffi-dev libssl-dev
 
-    - name: Install Python Dependencies
+    # Python deps
+    - name: Install Python Deps
       run: |
         pip install --upgrade pip
         pip install buildozer cython
 
-    - name: Setup Android SDK
-      run: |
-        mkdir -p $HOME/android-sdk/cmdline-tools
-        cd $HOME/android-sdk/cmdline-tools
-        wget https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O tools.zip
-        unzip tools.zip
-        mv cmdline-tools latest
+    # 🔥 Android SDK resmi (ANTI ERROR)
+    - name: Setup Android
+      uses: android-actions/setup-android@v3
 
-    - name: Set ENV
+    # 🔥 INSTALL SDK FIX
+    - name: Install SDK Components
       run: |
-        echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
-        echo "PATH=$HOME/android-sdk/cmdline-tools/latest/bin:$HOME/android-sdk/platform-tools:$PATH" >> $GITHUB_ENV
-
-    - name: Install SDK + Accept License (FIX TOTAL)
-      run: |
-        yes | sdkmanager --licenses
-
         sdkmanager "platform-tools"
         sdkmanager "platforms;android-31"
         sdkmanager "build-tools;31.0.0"
 
         yes | sdkmanager --licenses
 
+    # Build APK
     - name: Build APK
       run: |
         buildozer android debug
 
+    # Upload hasil
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
-        name: WanaboyAI-APK
+        name: WanaboyAI
         path: bin/*.apk
